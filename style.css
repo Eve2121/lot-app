@@ -1,3 +1,52 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Trade Pilot</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div>
+        <h1>Trade Pilot</h1>
+        <p class="subtitle">Entry / SL を入力してください</p>
+      </div>
+    </header>
+
+    <section class="common-panel panel">
+      <div class="panel-title-row">
+        <h2>Lot Calculator</h2>
+      </div>
+
+      <div class="grid common-grid">
+        <label class="field field-main">
+          <span class="label">Entry rate</span>
+          <input id="entry" type="text" inputmode="numeric" autocomplete="off" placeholder="150.000" />
+        </label>
+
+        <label class="field field-main">
+          <span class="label">SL rate</span>
+          <input id="sl" type="text" inputmode="numeric" autocomplete="off" placeholder="149.900" />
+        </label>
+      </div>
+
+      <div class="rr-row">
+        <label class="field field-rr">
+          <span class="label">RR setting</span>
+          <input id="rr" type="text" inputmode="decimal" autocomplete="off" placeholder="2.5" />
+        </label>
+        <div id="save-status" class="save-status">保存済み</div>
+      </div>
+    </section>
+
+    <!-- Other content -->
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
+  
 :root {
   --bg: #f3f4f6;
   --card: #ffffff;
@@ -99,7 +148,7 @@ h1 {
 }
 
 .common-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   margin-top: 12px;
 }
 
@@ -255,7 +304,7 @@ input[type="text"]:focus {
 .result-grid {
   margin-top: 14px;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: 10px;
 }
 
@@ -398,4 +447,174 @@ input[type="text"]:focus {
 
 .subtitle.is-success-text {
   color: #047857;
+}
+
+.field-main {
+  min-width: 0;
+}
+
+.rr-row {
+  margin-top: 12px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.field-rr {
+  max-width: 220px;
+  width: 100%;
+}
+
+.save-status {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: #ecfdf5;
+  color: #047857;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.save-status.is-saving {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.save-status.is-hidden {
+  opacity: 0;
+}
+
+@media (max-width: 640px) {
+  .rr-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .field-rr {
+    max-width: none;
+  }
+
+  .save-status {
+    width: 100%;
+  }
+}
+  
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  updateSaveStatus("saved");
+}
+
+function updateSaveStatus(mode = "saved") {
+  const statusEl = el("save-status");
+  if (!statusEl) return;
+
+  if (mode === "saving") {
+    statusEl.textContent = "保存中...";
+    statusEl.classList.add("is-saving");
+    statusEl.classList.remove("is-hidden");
+    return;
+  }
+
+  statusEl.textContent = "保存済み";
+  statusEl.classList.remove("is-saving");
+  statusEl.classList.remove("is-hidden");
+}
+
+function createCard(account) {
+  const resultItems = [
+    { label: "ロット数", role: "lot", value: "-" }
+  ];
+
+  // other code...
+}
+
+function updateCardResults(accountId) {
+  const account = state.accounts.find((a) => a.id === accountId);
+  const card = document.querySelector(`[data-account-id="${accountId}"]`);
+  if (!account || !card) return;
+
+  const balance = parseBalance(account.balanceRaw);
+  const riskPercent = parseRisk(account.riskRaw);
+  const lossAllowance = calculateLossAllowance(balance, riskPercent);
+
+  const slDiff = getSlDiff();
+  const lot = calculateLot(lossAllowance, slDiff, account.unitSize);
+  const validation = getValidationState();
+
+  const lossEl = card.querySelector('[data-role="loss"]');
+  const lotEl = card.querySelector('[data-role="lot"]');
+
+  if (lossEl) {
+    lossEl.textContent = lossAllowance > 0
+      ? lossAllowance.toLocaleString("en-US", { maximumFractionDigits: 0 })
+      : "0";
+    lossEl.classList.toggle("is-muted", !validation.valid && lossAllowance === 0);
+  }
+
+  if (lotEl) {
+    lotEl.textContent = validation.valid ? lot.toFixed(2) : "-";
+    lotEl.closest(".result-item")?.classList.toggle("is-muted", !validation.valid);
+    lotEl.closest(".result-item")?.classList.toggle("is-active", validation.valid);
+  }
+}
+
+function renderGlobalStats() {
+  // ... other code ...
+
+  if (subtitleEl) {
+    subtitleEl.textContent = validation.valid ? "" : validation.message;
+    subtitleEl.classList.toggle('is-error-text', !validation.valid);
+    subtitleEl.classList.toggle('is-success-text', false);
+  }
+
+  // ... other code ...
+}
+
+function createBalanceInput(account) {
+  const input = document.createElement("input");
+  // ... other setup code ...
+
+  input.addEventListener("input", () => {
+    // ... other code ...
+    updateSaveStatus("saving");
+    saveState();
+  });
+
+  return input;
+}
+
+function createRiskInput(account) {
+  const input = document.createElement("input");
+  // ... other setup code ...
+
+  input.addEventListener("input", () => {
+    // ... other code ...
+    updateSaveStatus("saving");
+    saveState();
+  });
+
+  return input;
+}
+
+function bindCommonInputs() {
+  const rrInput = el("rr");
+  rrInput.addEventListener("input", () => {
+    // ... other code ...
+    updateSaveStatus("saving");
+    saveState();
+  });
+}
+
+function init() {
+  // ... other init code ...
+
+  el("rr").value = state.rr;
+  renderAll();
+  updateSaveStatus("saved");
 }

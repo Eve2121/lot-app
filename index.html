@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>USDJPY ロット計算</title>
+  <title>Trade Pilot</title>
   <meta name="theme-color" content="#111827" />
   <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="style.css" />
@@ -12,31 +12,34 @@
   <div class="app">
     <header class="topbar">
       <div>
-        <h1>USDJPY ロット計算</h1>
-        <p class="subtitle">Entry / SL / RR は全口座共通</p>
+        <h1>Trade Pilot</h1>
+        <p class="subtitle">Entry / SL を入力してください</p>
       </div>
     </header>
 
     <section class="panel common-panel">
       <div class="panel-title-row">
-        <h2>共通入力</h2>
+        <h2>Lot Calculator</h2>
       </div>
 
       <div class="grid common-grid">
-        <label class="field">
+        <label class="field field-main">
           <span class="label">Entry rate</span>
           <input id="entry" type="text" inputmode="numeric" autocomplete="off" placeholder="150.000" />
         </label>
 
-        <label class="field">
+        <label class="field field-main">
           <span class="label">SL rate</span>
           <input id="sl" type="text" inputmode="numeric" autocomplete="off" placeholder="149.900" />
         </label>
+      </div>
 
-        <label class="field">
-          <span class="label">RR</span>
+      <div class="rr-row">
+        <label class="field field-rr">
+          <span class="label">RR setting</span>
           <input id="rr" type="text" inputmode="decimal" autocomplete="off" placeholder="2.5" />
         </label>
+        <div id="save-status" class="save-status">保存済み</div>
       </div>
 
       <div class="quick-stats">
@@ -67,12 +70,12 @@
   </div>
 
   <script src="app.js?v=20260322-2"></script>
-<script>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.getRegistrations().then((registrations) => {
-      registrations.forEach((registration) => registration.unregister());
-    });
-  }
-</script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        registrations.forEach((registration) => registration.unregister());
+      });
+    }
+  </script>
 </body>
 </html>
