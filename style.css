@@ -94,3 +94,50 @@ h1 {
 .topbar {
   margin-bottom: 24px;
 }
+
+input[type="text"] {
+  transition:
+    transform 0.12s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+input[type="text"]:focus {
+  border-color: rgba(147, 197, 253, 0.6);
+  box-shadow:
+    0 0 0 2px rgba(147, 197, 253, 0.18),
+    0 4px 12px rgba(59, 130, 246, 0.12);
+  transform: scale(1.01);
+  background-color: rgba(255, 255, 255, 0.985);
+}
+
+input[type="text"]:active {
+  transform: scale(1.01);
+}
+
+/* Advanced UX: 周辺カードが少し沈む（フォーカス強調） */
+.app:focus-within .card,
+.app:focus-within .panel {
+  transform: scale(0.995);
+  opacity: 0.96;
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease;
+}
+
+/* フォーカス中の入力があるカードだけ浮かせる */
+.card:has(input:focus),
+.panel:has(input:focus) {
+  transform: scale(1.01);
+  opacity: 1;
+  z-index: 2;
+}
+
+/* Scroll feel: smoother, more inertial */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+}
