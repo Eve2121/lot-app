@@ -415,10 +415,8 @@ function createCard(account) {
   const results = document.createElement("div");
   results.className = "result-grid";
 
-    const resultItems = [
-    { label: "ロット数", role: "lot", value: "-" },
-    { label: "SL pips", role: "slPips", value: "0.0" },
-    { label: "TP pips", role: "tpPips", value: "0.0" }
+   const resultItems = [
+    { label: "ロット数", role: "lot", value: "-" }
   ];
 
   resultItems.forEach((item) => {
@@ -453,15 +451,11 @@ function updateCardResults(accountId) {
   const lossAllowance = calculateLossAllowance(balance, riskPercent);
 
   const slDiff = getSlDiff();
-  const slPips = getSlPips();
-  const tpPips = getTpPips();
   const lot = calculateLot(lossAllowance, slDiff, account.unitSize);
   const validation = getValidationState();
 
   const lossEl = card.querySelector('[data-role="loss"]');
   const lotEl = card.querySelector('[data-role="lot"]');
-  const slPipsEl = card.querySelector('[data-role="slPips"]');
-  const tpPipsEl = card.querySelector('[data-role="tpPips"]');
 
   if (lossEl) {
     lossEl.textContent = lossAllowance > 0
@@ -474,18 +468,6 @@ function updateCardResults(accountId) {
     lotEl.textContent = validation.valid ? lot.toFixed(2) : "-";
     lotEl.closest(".result-item")?.classList.toggle("is-muted", !validation.valid);
     lotEl.closest(".result-item")?.classList.toggle("is-active", validation.valid);
-  }
-
-  if (slPipsEl) {
-    slPipsEl.textContent = validation.valid ? slPips.toFixed(1) : "0.0";
-    slPipsEl.closest(".result-item")?.classList.toggle("is-muted", !validation.valid);
-    slPipsEl.closest(".result-item")?.classList.toggle("is-active", validation.valid);
-  }
-
-  if (tpPipsEl) {
-    tpPipsEl.textContent = validation.valid ? tpPips.toFixed(1) : "0.0";
-    tpPipsEl.closest(".result-item")?.classList.toggle("is-muted", !validation.valid);
-    tpPipsEl.closest(".result-item")?.classList.toggle("is-active", validation.valid);
   }
 }
 
@@ -560,10 +542,10 @@ function renderGlobalStats() {
   tpEl.closest(".stat")?.classList.toggle("is-muted", !validation.valid);
   tpEl.closest(".stat")?.classList.toggle("is-active", validation.valid);
 
-  if (subtitleEl) {
-    subtitleEl.textContent = validation.message;
-    subtitleEl.classList.toggle("is-error-text", !validation.valid);
-    subtitleEl.classList.toggle("is-success-text", validation.valid);
+    if (subtitleEl) {
+    subtitleEl.textContent = validation.valid ? "" : validation.message;
+    subtitleEl.classList.toggle('is-error-text', !validation.valid);
+    subtitleEl.classList.toggle('is-success-text', false);
   }
 }
 
