@@ -1,3 +1,4 @@
+/* style.css */
 :root {
   color-scheme: light dark;
   --bg: #f3f4f6;
@@ -96,7 +97,7 @@ h1 {
   padding: 22px;
   background: linear-gradient(
     180deg,
-    rgba(37, 99, 235, 0.1) 0%,
+    rgba(37, 99, 235, 0.10) 0%,
     rgba(255, 255, 255, 0.99) 100%
   );
   border: 2px solid rgba(255, 255, 255, 0.96);
@@ -353,6 +354,8 @@ input[type="text"]:active {
   color: #fff;
   white-space: nowrap;
   box-shadow: 0 8px 20px rgba(17, 24, 39, 0.18);
+  min-width: 42px;
+  padding: 0 14px;
 }
 
 .action-btn {
@@ -567,12 +570,17 @@ input[type="text"]:active {
   }
 
   .accounts-header {
-    align-items: stretch;
-    flex-direction: column;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row;
+    padding: 0 2px 12px;
   }
 
   .add-btn {
-    width: 100%;
+    width: auto;
+    min-width: 42px;
+    padding: 0 14px;
   }
 
   .card-header {
@@ -744,3 +752,7 @@ input[type="text"]:active {
     color: #86efac;
   }
 }
+</file>
+<file name=app.js path=/Users/kkk/Desktop/lot-app>  btn.textContent = count >= MAX_CARDS ? "Limit Reached" : "+";
+  btn.setAttribute("aria-label", count >= MAX_CARDS ? "Limit reached" : "Add account");
+</file>
