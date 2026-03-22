@@ -455,3 +455,37 @@ input[type="text"]:focus {
     width: 100%;
   }
 }
+
+.save-status {
+  transition: opacity 0.25s ease, transform 0.25s ease, background-color 0.25s ease, color 0.25s ease;
+}
+
+.save-status.is-saving {
+  animation: savePulse 0.9s ease-in-out infinite;
+}
+
+.save-status.is-hidden {
+  opacity: 0;
+  transform: translateY(4px);
+}
+
+.visible-add-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes savePulse {
+  0% {
+    transform: translateY(0);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateY(-1px);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 0.7;
+  }
+}
