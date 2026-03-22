@@ -172,19 +172,19 @@ input[type="text"]:active {
   margin-top: 12px;
   display: flex;
   align-items: flex-end;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 12px;
 }
 
 .field-rr {
-  max-width: 220px;
+  max-width: calc(50% - 6px);
   width: 100%;
 }
 
 .quick-stats {
   margin-top: 16px;
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
 }
 
@@ -221,13 +221,20 @@ input[type="text"]:active {
   font-size: 12px;
   font-weight: 700;
   white-space: nowrap;
-  transition: opacity 0.25s ease, transform 0.25s ease, background-color 0.25s ease, color 0.25s ease;
+  transition: opacity 0.25s ease, transform 0.25s ease, background-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
 }
 
 .save-status.is-saving {
   background: #eff6ff;
   color: #1d4ed8;
   animation: pulse 1s infinite;
+}
+
+.save-status.is-saved {
+  background: #dcfce7;
+  color: #166534;
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(22, 101, 52, 0.12);
 }
 
 .save-status.is-hidden {
@@ -257,6 +264,7 @@ input[type="text"]:active {
 .add-btn {
   background: var(--accent);
   color: #fff;
+  white-space: nowrap;
 }
 
 .cards {
