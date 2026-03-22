@@ -35,17 +35,20 @@
 
 @media (max-width: 640px) {
   .accounts-header {
-    display: flex;
-    flex-direction: row;
+    display: flex !important;
+    flex-direction: row !important;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: nowrap;
   }
 
   .accounts-header h2 {
     flex: 1;
+    white-space: nowrap;
   }
 
   .add-btn {
     flex-shrink: 0;
+    margin-left: 8px;
   }
 }
