@@ -96,6 +96,7 @@ h1 {
 .common-panel::before {
   content: "";
   display: block;
+  width: 96px;
   height: 3px;
   border-radius: 999px;
   background: linear-gradient(90deg, #2563eb, #60a5fa);
@@ -337,7 +338,7 @@ input[type="text"]:active {
 .accounts-header {
   padding: 10px 12px;
   border-radius: 12px;
-  background: rgba(0, 0, 0, 0.02);
+  background: rgba(0, 0, 0, 0.035);
   border: 1px solid var(--card-border);
 }
 
@@ -348,6 +349,11 @@ input[type="text"]:active {
 
 .card {
   padding: 18px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(248, 250, 252, 0.96) 100%
+  );
 }
 
 .card-name-wrap {
@@ -602,8 +608,16 @@ input[type="text"]:active {
   }
 
   .accounts-header {
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(255, 255, 255, 0.06);
     border-color: #334155;
+  }
+
+  .card {
+    background: linear-gradient(
+      180deg,
+      rgba(15, 23, 42, 0.96) 0%,
+      rgba(12, 20, 36, 0.96) 100%
+    );
   }
 
   input[type="text"] {
