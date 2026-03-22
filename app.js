@@ -203,10 +203,14 @@ function createBalanceInput(account) {
   input.placeholder = "1,000,000";
   input.value = formatNumberWithCommasFromDigits(account.balanceRaw);
 
+  input.addEventListener("focus", (event) => {
+    event.target.value = account.balanceRaw;
+  });
+
   input.addEventListener("input", (event) => {
     const digits = sanitizeDigits(event.target.value);
     account.balanceRaw = digits;
-    event.target.value = formatNumberWithCommasFromDigits(digits);
+    event.target.value = digits;
     saveState();
     updateCardResults(account.id);
   });
@@ -227,6 +231,10 @@ function createRiskInput(account) {
   input.autocomplete = "off";
   input.placeholder = "1.00";
   input.value = account.riskRaw;
+
+  input.addEventListener("focus", (event) => {
+    event.target.value = account.riskRaw;
+  });
 
   input.addEventListener("input", (event) => {
     const normalized = normalizeRiskInput(event.target.value);
