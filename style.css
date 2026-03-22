@@ -434,6 +434,7 @@ input[type="text"]:focus {
   font-weight: 800;
   letter-spacing: 0.02em;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .save-status.is-saving {
