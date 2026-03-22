@@ -107,7 +107,7 @@ h1 {
 }
 
 .common-panel::before {
-  content: none;
+  display: none;
 }
 
 .panel-title-row {
@@ -637,7 +637,7 @@ input[type="text"]:active {
   }
 
   .common-panel::before {
-    content: none;
+    display: none;
   }
 
   .accounts-header {
