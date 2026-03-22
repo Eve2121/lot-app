@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>USDJPY ロット計算</title>
+  <meta name="theme-color" content="#111827" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div>
+        <h1>USDJPY ロット計算</h1>
+        <p class="subtitle">Entry / SL / RR は全口座共通</p>
+      </div>
+    </header>
+
+    <section class="panel common-panel">
+      <div class="panel-title-row">
+        <h2>共通入力</h2>
+      </div>
+
+      <div class="grid common-grid">
+        <label class="field">
+          <span class="label">Entry rate</span>
+          <input id="entry" type="text" inputmode="numeric" autocomplete="off" placeholder="150.000" />
+        </label>
+
+        <label class="field">
+          <span class="label">SL rate</span>
+          <input id="sl" type="text" inputmode="numeric" autocomplete="off" placeholder="149.900" />
+        </label>
+
+        <label class="field">
+          <span class="label">RR</span>
+          <input id="rr" type="text" inputmode="decimal" autocomplete="off" placeholder="2.5" />
+        </label>
+      </div>
+
+      <div class="quick-stats">
+        <div class="stat">
+          <span class="stat-label">SL pips</span>
+          <strong id="global-sl-pips">0.0</strong>
+        </div>
+        <div class="stat">
+          <span class="stat-label">TP pips</span>
+          <strong id="global-tp-pips">0.0</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="accounts-header">
+      <h2>口座カード</h2>
+      <button id="add-card-btn" class="add-btn" type="button">＋ カード追加</button>
+    </section>
+
+    <main id="cards" class="cards"></main>
+
+    <section id="hidden-section" class="panel hidden-panel hidden">
+      <div class="panel-title-row">
+        <h2>非表示カード</h2>
+      </div>
+      <div id="hidden-cards-list" class="hidden-cards-list"></div>
+    </section>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("service-worker.js");
+    }
+  </script>
+</body>
+</html>
