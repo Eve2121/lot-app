@@ -106,8 +106,17 @@ h1 {
   position: relative;
 }
 
-.common-panel::before {
-  display: none;
+.common-panel::before,
+.common-panel::after {
+  content: none !important;
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+  border: 0 !important;
 }
 
 .panel-title-row {
@@ -636,8 +645,17 @@ input[type="text"]:active {
       0 14px 30px rgba(0, 0, 0, 0.26);
   }
 
-  .common-panel::before {
-    display: none;
+  .common-panel::before,
+  .common-panel::after {
+    content: none !important;
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: none !important;
+    box-shadow: none !important;
+    border: 0 !important;
   }
 
   .accounts-header {
