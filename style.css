@@ -197,9 +197,8 @@ input[type="text"]:active {
 .quick-stats {
   margin-top: 14px;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: 10px;
-  align-items: stretch;
 }
 
 .stat {
@@ -534,8 +533,8 @@ input[type="text"]:active {
   }
 
   .quick-stats {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px;
+    grid-template-columns: 1fr;
+    gap: 10px;
   }
 
   .accounts-header {
