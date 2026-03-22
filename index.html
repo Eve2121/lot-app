@@ -1,81 +1,137 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Trade Pilot</title>
-  <meta name="theme-color" content="#111827" />
-  <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" href="style.css?v=20260322-23" />
-</head>
-<body>
-  <div class="app">
-    <header class="topbar">
-      <div>
-        <h1>Trade Pilot</h1>
-        <p class="subtitle">Entry / SL を入力してください</p>
-      </div>
-    </header>
+:root {
+  color-scheme: light dark;
+  --bg: #f3f4f6;
+  --card: rgba(255, 255, 255, 0.96);
+  --card-border: #e5e7eb;
+  --text: #111827;
+  --subtext: #6b7280;
+  --accent: #111827;
+  --accent-2: #2563eb;
+  --accent-2-soft: rgba(37, 99, 235, 0.14);
+  --danger: #dc2626;
+  --success: #059669;
+  --shadow: 0 10px 28px rgba(17, 24, 39, 0.08);
+  --shadow-hover: 0 16px 36px rgba(17, 24, 39, 0.12);
+  --radius: 16px;
+}
 
-    <section class="panel common-panel">
-      <div class="panel-title-row">
-        <h2>Lot Calculator</h2>
-        <div id="save-status" class="save-status is-hidden">保存済み</div>
-      </div>
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(37, 99, 235, 0.06), transparent 26%),
+    linear-gradient(180deg, #f8fafc 0%, var(--bg) 100%);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Sans", "Yu Gothic", Meiryo, sans-serif;
+  transition: background 0.25s ease, color 0.25s ease;
+}
 
-      <div class="grid common-grid">
-        <label class="field field-main">
-          <span class="label">Entry rate</span>
-          <input id="entry" type="text" inputmode="numeric" autocomplete="off" placeholder="150.000" />
-        </label>
+input[type="text"] {
+  width: 100%;
+  min-height: 50px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  color: var(--text);
+  outline: none;
+  transition:
+    transform 0.08s ease,
+    box-shadow 0.14s ease,
+    background-color 0.2s ease,
+    border-color 0.14s ease,
+    color 0.2s ease;
+}
 
-        <label class="field field-main">
-          <span class="label">SL rate</span>
-          <input id="sl" type="text" inputmode="numeric" autocomplete="off" placeholder="149.900" />
-        </label>
-      </div>
+/* existing CSS content continues here... */
 
-      <div class="rr-row">
-        <label class="field field-rr">
-          <span class="label">RR setting</span>
-          <input id="rr" type="text" inputmode="decimal" autocomplete="off" placeholder="2.5" />
-        </label>
-      </div>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0b1220;
+    --card: rgba(15, 23, 42, 0.92);
+    --card-border: #243041;
+    --text: #e5e7eb;
+    --subtext: #94a3b8;
+    --accent: #e5e7eb;
+    --accent-2: #60a5fa;
+    --accent-2-soft: rgba(96, 165, 250, 0.18);
+    --danger: #f87171;
+    --success: #34d399;
+    --shadow: 0 14px 32px rgba(0, 0, 0, 0.34);
+    --shadow-hover: 0 18px 40px rgba(0, 0, 0, 0.42);
+  }
 
-      <div class="quick-stats">
-        <div class="stat">
-          <span class="stat-label">SL pips</span>
-          <strong id="global-sl-pips">0.0</strong>
-        </div>
-        <div class="stat">
-          <span class="stat-label">TP pips</span>
-          <strong id="global-tp-pips">0.0</strong>
-        </div>
-      </div>
-    </section>
+  body {
+    background:
+      radial-gradient(circle at top left, rgba(96, 165, 250, 0.12), transparent 24%),
+      linear-gradient(180deg, #0f172a 0%, var(--bg) 100%);
+  }
 
-    <section class="accounts-header">
-      <h2>口座カード</h2>
-      <button id="add-card-btn" class="add-btn" type="button">＋ カード追加</button>
-    </section>
+  input[type="text"] {
+    border-color: #334155;
+    background: #0f172a;
+    color: var(--text);
+  }
 
-    <main id="cards" class="cards"></main>
+  input[type="text"]::placeholder {
+    color: #64748b;
+  }
 
-    <section id="hidden-section" class="panel hidden-panel hidden">
-      <div class="panel-title-row">
-        <h2>非表示カード</h2>
-      </div>
-      <div id="hidden-cards-list" class="hidden-cards-list"></div>
-    </section>
-  </div>
+  input[type="text"]:focus {
+    background-color: #111827;
+  }
 
-  <script src="app.js?v=20260322-23"></script>
-  <script>
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.getRegistrations().then((registrations) => {
-        registrations.forEach((registration) => registration.unregister());
-      });
-    }
-  </script>
-</body>
-</html>
+  .readonly-box,
+  .stat,
+  .result-item {
+    border-color: #334155;
+    background: linear-gradient(180deg, rgba(30, 41, 59, 0.96) 0%, rgba(15, 23, 42, 0.96) 100%);
+  }
+
+  .action-btn {
+    background: #1e293b;
+    color: var(--text);
+  }
+
+  .action-btn.danger {
+    background: rgba(127, 29, 29, 0.35);
+    color: #fecaca;
+  }
+
+  .hidden-chip {
+    border-color: #334155;
+    background: #0f172a;
+    color: var(--text);
+  }
+
+  .title-cancel-btn {
+    background: #1e293b;
+    color: var(--text);
+  }
+
+  .result-item.is-active,
+  .stat.is-active {
+    border-color: #60a5fa;
+    background: linear-gradient(180deg, rgba(30, 64, 175, 0.22) 0%, rgba(15, 23, 42, 0.96) 100%);
+    box-shadow: 0 10px 22px rgba(96, 165, 250, 0.16);
+  }
+
+  .save-status.is-saving {
+    background: rgba(30, 64, 175, 0.25);
+    color: #bfdbfe;
+  }
+
+  .save-status.is-saved {
+    background: rgba(6, 95, 70, 0.28);
+    color: #bbf7d0;
+    box-shadow: 0 6px 16px rgba(52, 211, 153, 0.12);
+  }
+
+  .subtitle.is-error-text {
+    color: #fca5a5;
+  }
+
+  .subtitle.is-success-text {
+    color: #86efac;
+  }
+}
