@@ -1,7 +1,10 @@
 {
+  "id": "/lot-app/",
   "name": "Risk Pilot",
   "short_name": "Risk",
-  "start_url": "./",
+  "description": "Trade risk and lot sizing app.",
+  "start_url": "/lot-app/",
+  "scope": "/lot-app/",
   "display": "standalone",
   "background_color": "#0b1220",
   "theme_color": "#0b1220",
@@ -9,12 +12,14 @@
     {
       "src": "icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
