@@ -722,17 +722,3 @@ function init() {
 }
 
 init();
-
-let deferredInstallPrompt = null;
-
-window.addEventListener("beforeinstallprompt", (event) => {
-  event.preventDefault();
-  deferredInstallPrompt = event;
-  console.log("beforeinstallprompt fired");
-  alert("beforeinstallprompt fired");
-});
-
-window.addEventListener("appinstalled", () => {
-  console.log("PWA installed");
-  alert("PWA installed");
-});
