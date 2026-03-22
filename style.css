@@ -96,6 +96,10 @@ h1 {
   font-size: 18px;
 }
 
+.panel-title-row h2 {
+  white-space: nowrap;
+}
+
 .common-grid,
 .card-grid {
   display: grid;
@@ -454,10 +458,6 @@ input[type="text"]:focus {
 
   .field-rr {
     max-width: none;
-  }
-
-  .save-status {
-    width: 100%;
   }
 }
 
