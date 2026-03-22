@@ -427,7 +427,15 @@ input[type="text"]:active {
 }
 
 .hidden-panel {
-  margin-top: 16px;
+  margin-top: 10px;
+  margin-bottom: 14px;
+  padding: 16px 18px;
+}
+
+.hidden-panel-note {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: var(--subtext);
 }
 
 .hidden-cards-list {
