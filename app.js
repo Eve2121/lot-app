@@ -412,29 +412,23 @@ function createCard(account) {
 
   card.appendChild(grid);
 
-  const results = document.createElement("div");
+    const results = document.createElement("div");
   results.className = "result-grid";
 
-   const resultItems = [
-    { label: "ロット数", role: "lot", value: "-" }
-  ];
+  const lotBox = document.createElement("div");
+  lotBox.className = "result-item";
 
-  resultItems.forEach((item) => {
-    const box = document.createElement("div");
-    box.className = "result-item";
+  const lotLabel = document.createElement("span");
+  lotLabel.className = "result-label";
+  lotLabel.textContent = "ロット数";
 
-    const label = document.createElement("span");
-    label.className = "result-label";
-    label.textContent = item.label;
+  const lotValue = document.createElement("strong");
+  lotValue.textContent = "-";
+  lotValue.dataset.role = "lot";
 
-    const strong = document.createElement("strong");
-    strong.textContent = item.value;
-    strong.dataset.role = item.role;
-
-    box.appendChild(label);
-    box.appendChild(strong);
-    results.appendChild(box);
-  });
+  lotBox.appendChild(lotLabel);
+  lotBox.appendChild(lotValue);
+  results.appendChild(lotBox);
 
   card.appendChild(results);
 
@@ -456,6 +450,10 @@ function updateCardResults(accountId) {
 
   const lossEl = card.querySelector('[data-role="loss"]');
   const lotEl = card.querySelector('[data-role="lot"]');
+  const oldSlPipsItem = card.querySelector('[data-role="slPips"]')?.closest('.result-item');
+  const oldTpPipsItem = card.querySelector('[data-role="tpPips"]')?.closest('.result-item');
+  if (oldSlPipsItem) oldSlPipsItem.remove();
+  if (oldTpPipsItem) oldTpPipsItem.remove();
 
   if (lossEl) {
     lossEl.textContent = lossAllowance > 0
