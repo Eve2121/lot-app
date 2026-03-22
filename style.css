@@ -102,14 +102,16 @@ h1 {
   position: relative;
 }
 
-.common-panel::before {
+common-panel::before {
   content: "";
   display: block;
-  width: 120px;
+  width: 96px;                 /* ← 少し短くして洗練 */
   height: 3px;
   border-radius: 999px;
   background: linear-gradient(90deg, #2563eb, #60a5fa);
-  margin-bottom: 12px;
+
+  margin-left: 2px;            /* ← 左余白と視覚的揃え（超重要） */
+  margin-bottom: 14px;         /* ← 少しだけ余白増やして呼吸感 */
 }
 
 
