@@ -1,4 +1,3 @@
-// change test 123
 const MAX_CARDS = 10;
 
 const FIXED_ACCOUNTS = [
@@ -8,7 +7,7 @@ const FIXED_ACCOUNTS = [
   { id: "gmo", name: "GMO", unitSize: 10000, visible: true, custom: false }
 ];
 
-const STORAGE_KEY = "lotcalc_state_v2";
+const STORAGE_KEY = "lotcalc_state_v3";
 
 const el = (id) => document.getElementById(id);
 
@@ -196,6 +195,245 @@ function createField(labelText, inputEl) {
   return label;
 }
 
+function createBalanceInput(account) {
+  const input = document.createElement("input");
+  input.type = "text";
+  input.inputMode = "numeric";
+  input.autocomplete = "off";
+  input.placeholder = "1,000,000";
+  input.value = formatNumberWithCommasFromDigits(account.balanceRaw);
+
+  input.addEventListener("input", (event) => {
+    const digits = sanitizeDigits(event.target.value);
+    account.balanceRaw = digits;
+    event.target.value = formatNumberWithCommasFromDigits(digits);
+    saveState();
+    updateCardResults(account.id);
+  });
+
+  input.addEventListener("blur", (event) => {
+    event.target.value = formatNumberWithCommasFromDigits(account.balanceRaw);
+    saveState();
+    updateCardResults(account.id);
+  });
+
+  return input;
+}
+
+function createRiskInput(account) {
+  const input = document.createElement("input");
+  input.type = "text";
+  input.inputMode = "decimal";
+  input.autocomplete = "off";
+  input.placeholder = "1.00";
+  input.value = account.riskRaw;
+
+  input.addEventListener("input", (event) => {
+    const normalized = normalizeRiskInput(event.target.value);
+    account.riskRaw = normalized;
+    event.target.value = normalized;
+    saveState();
+    updateCardResults(account.id);
+  });
+
+  input.addEventListener("blur", (event) => {
+    const num = parseRisk(account.riskRaw);
+    account.riskRaw = account.riskRaw === "" ? "" : num.toFixed(2);
+    event.target.value = account.riskRaw;
+    saveState();
+    updateCardResults(account.id);
+  });
+
+  return input;
+}
+
+function createCard(account) {
+  const card = document.createElement("section");
+  card.className = "card";
+  card.dataset.accountId = account.id;
+
+  const header = document.createElement("div");
+  header.className = "card-header";
+
+  const nameWrap = document.createElement("div");
+  nameWrap.className = "card-name-wrap";
+
+  if (account.isEditingTitle) {
+    const editRow = document.createElement("div");
+    editRow.className = "title-edit-row";
+
+    const titleInput = document.createElement("input");
+    titleInput.type = "text";
+    titleInput.value = account.name;
+    titleInput.maxLength = 30;
+
+    const saveBtn = document.createElement("button");
+    saveBtn.type = "button";
+    saveBtn.className = "title-save-btn";
+    saveBtn.textContent = "保存";
+
+    const cancelBtn = document.createElement("button");
+    cancelBtn.type = "button";
+    cancelBtn.className = "title-cancel-btn";
+    cancelBtn.textContent = "取消";
+
+    saveBtn.addEventListener("click", () => {
+      const next = titleInput.value.trim();
+      account.name = next || getDefaultCustomNameFromId(account.id) || account.name;
+      account.isEditingTitle = false;
+      saveState();
+      renderAll();
+    });
+
+    cancelBtn.addEventListener("click", () => {
+      account.isEditingTitle = false;
+      renderAll();
+    });
+
+    titleInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") saveBtn.click();
+      if (event.key === "Escape") cancelBtn.click();
+    });
+
+    editRow.appendChild(titleInput);
+    editRow.appendChild(saveBtn);
+    editRow.appendChild(cancelBtn);
+    nameWrap.appendChild(editRow);
+
+    setTimeout(() => titleInput.focus(), 0);
+  } else {
+    const title = document.createElement("div");
+    title.className = "card-title-display editable-hint";
+    title.textContent = account.name;
+    title.addEventListener("click", () => {
+      account.isEditingTitle = true;
+      renderAll();
+    });
+
+    const meta = document.createElement("div");
+    meta.className = "card-meta";
+    meta.textContent = `1ロット = ${account.unitSize.toLocaleString("en-US")}通貨`;
+
+    const titleBox = document.createElement("div");
+    titleBox.appendChild(title);
+    titleBox.appendChild(meta);
+
+    nameWrap.appendChild(titleBox);
+  }
+
+  const actions = document.createElement("div");
+  actions.className = "card-actions";
+
+  const hideBtn = document.createElement("button");
+  hideBtn.type = "button";
+  hideBtn.className = "action-btn";
+  hideBtn.textContent = "非表示";
+  hideBtn.addEventListener("click", () => {
+    account.visible = false;
+    account.isEditingTitle = false;
+    saveState();
+    renderAll();
+  });
+  actions.appendChild(hideBtn);
+
+  if (account.custom) {
+    const deleteBtn = document.createElement("button");
+    deleteBtn.type = "button";
+    deleteBtn.className = "action-btn danger";
+    deleteBtn.textContent = "削除";
+    deleteBtn.addEventListener("click", () => {
+      state.accounts = state.accounts.filter((a) => a.id !== account.id);
+      saveState();
+      renderAll();
+    });
+    actions.appendChild(deleteBtn);
+  }
+
+  header.appendChild(nameWrap);
+  header.appendChild(actions);
+  card.appendChild(header);
+
+  const grid = document.createElement("div");
+  grid.className = "card-grid";
+
+  const balanceInput = createBalanceInput(account);
+  const riskInput = createRiskInput(account);
+
+  const lossBox = createReadonlyBox("0");
+  lossBox.dataset.role = "loss";
+
+  grid.appendChild(createField("口座残高", balanceInput));
+  grid.appendChild(createField("リスク%", riskInput));
+  grid.appendChild(createField("損失許容額", lossBox));
+
+  card.appendChild(grid);
+
+  const results = document.createElement("div");
+  results.className = "result-grid";
+
+  const resultItems = [
+    { label: "ロット数", role: "lot", value: "0.00" },
+    { label: "SL pips", role: "slPips", value: "0.0" },
+    { label: "TP pips", role: "tpPips", value: "0.0" }
+  ];
+
+  resultItems.forEach((item) => {
+    const box = document.createElement("div");
+    box.className = "result-item";
+
+    const label = document.createElement("span");
+    label.className = "result-label";
+    label.textContent = item.label;
+
+    const strong = document.createElement("strong");
+    strong.textContent = item.value;
+    strong.dataset.role = item.role;
+
+    box.appendChild(label);
+    box.appendChild(strong);
+    results.appendChild(box);
+  });
+
+  card.appendChild(results);
+
+  return card;
+}
+
+function updateCardResults(accountId) {
+  const account = state.accounts.find((a) => a.id === accountId);
+  const card = document.querySelector(`[data-account-id="${accountId}"]`);
+  if (!account || !card) return;
+
+  const balance = parseBalance(account.balanceRaw);
+  const riskPercent = parseRisk(account.riskRaw);
+  const lossAllowance = calculateLossAllowance(balance, riskPercent);
+
+  const slDiff = getSlDiff();
+  const slPips = getSlPips();
+  const tpPips = getTpPips();
+  const lot = calculateLot(lossAllowance, slDiff, account.unitSize);
+
+  const lossEl = card.querySelector('[data-role="loss"]');
+  const lotEl = card.querySelector('[data-role="lot"]');
+  const slPipsEl = card.querySelector('[data-role="slPips"]');
+  const tpPipsEl = card.querySelector('[data-role="tpPips"]');
+
+  if (lossEl) {
+    lossEl.textContent = lossAllowance > 0
+      ? lossAllowance.toLocaleString("en-US", { maximumFractionDigits: 0 })
+      : "0";
+  }
+  if (lotEl) lotEl.textContent = lot.toFixed(2);
+  if (slPipsEl) slPipsEl.textContent = slPips.toFixed(1);
+  if (tpPipsEl) tpPipsEl.textContent = tpPips.toFixed(1);
+}
+
+function updateAllCardResults() {
+  state.accounts
+    .filter((account) => account.visible)
+    .forEach((account) => updateCardResults(account.id));
+}
+
 function renderCards() {
   const cardsRoot = el("cards");
   cardsRoot.innerHTML = "";
@@ -203,198 +441,11 @@ function renderCards() {
   state.accounts
     .filter((account) => account.visible)
     .forEach((account) => {
-      const card = document.createElement("section");
-      card.className = "card";
-
-      const header = document.createElement("div");
-      header.className = "card-header";
-
-      const nameWrap = document.createElement("div");
-      nameWrap.className = "card-name-wrap";
-
-      if (account.isEditingTitle) {
-        const editRow = document.createElement("div");
-        editRow.className = "title-edit-row";
-
-        const titleInput = document.createElement("input");
-        titleInput.type = "text";
-        titleInput.value = account.name;
-        titleInput.maxLength = 30;
-
-        const saveBtn = document.createElement("button");
-        saveBtn.type = "button";
-        saveBtn.className = "title-save-btn";
-        saveBtn.textContent = "保存";
-
-        const cancelBtn = document.createElement("button");
-        cancelBtn.type = "button";
-        cancelBtn.className = "title-cancel-btn";
-        cancelBtn.textContent = "取消";
-
-        saveBtn.addEventListener("click", () => {
-          const next = titleInput.value.trim();
-          account.name = next || getDefaultCustomNameFromId(account.id) || account.name;
-          account.isEditingTitle = false;
-          saveState();
-          renderAll();
-        });
-
-        cancelBtn.addEventListener("click", () => {
-          account.isEditingTitle = false;
-          renderAll();
-        });
-
-        titleInput.addEventListener("keydown", (event) => {
-          if (event.key === "Enter") saveBtn.click();
-          if (event.key === "Escape") cancelBtn.click();
-        });
-
-        editRow.appendChild(titleInput);
-        editRow.appendChild(saveBtn);
-        editRow.appendChild(cancelBtn);
-        nameWrap.appendChild(editRow);
-
-        setTimeout(() => titleInput.focus(), 0);
-      } else {
-        const title = document.createElement("div");
-        title.className = "card-title-display editable-hint";
-        title.textContent = account.name;
-        title.addEventListener("click", () => {
-          account.isEditingTitle = true;
-          renderAll();
-        });
-
-        const meta = document.createElement("div");
-        meta.className = "card-meta";
-        meta.textContent = `1ロット = ${account.unitSize.toLocaleString("en-US")}通貨`;
-
-        const titleBox = document.createElement("div");
-        titleBox.appendChild(title);
-        titleBox.appendChild(meta);
-
-        nameWrap.appendChild(titleBox);
-      }
-
-      const actions = document.createElement("div");
-      actions.className = "card-actions";
-
-      const hideBtn = document.createElement("button");
-      hideBtn.type = "button";
-      hideBtn.className = "action-btn";
-      hideBtn.textContent = "非表示";
-      hideBtn.addEventListener("click", () => {
-        account.visible = false;
-        account.isEditingTitle = false;
-        saveState();
-        renderAll();
-      });
-      actions.appendChild(hideBtn);
-
-      if (account.custom) {
-        const deleteBtn = document.createElement("button");
-        deleteBtn.type = "button";
-        deleteBtn.className = "action-btn danger";
-        deleteBtn.textContent = "削除";
-        deleteBtn.addEventListener("click", () => {
-          state.accounts = state.accounts.filter((a) => a.id !== account.id);
-          saveState();
-          renderAll();
-        });
-        actions.appendChild(deleteBtn);
-      }
-
-      header.appendChild(nameWrap);
-      header.appendChild(actions);
-      card.appendChild(header);
-
-      const grid = document.createElement("div");
-      grid.className = "card-grid";
-
-      const balanceInput = document.createElement("input");
-      balanceInput.type = "text";
-      balanceInput.inputMode = "numeric";
-      balanceInput.autocomplete = "off";
-      balanceInput.placeholder = "1,000,000";
-      balanceInput.value = formatNumberWithCommasFromDigits(account.balanceRaw);
-      balanceInput.addEventListener("input", (event) => {
-        const digits = sanitizeDigits(event.target.value);
-        account.balanceRaw = digits;
-        event.target.value = formatNumberWithCommasFromDigits(digits);
-        saveState();
-        renderAll();
-      });
-
-      const riskInput = document.createElement("input");
-      riskInput.type = "text";
-      riskInput.inputMode = "decimal";
-      riskInput.autocomplete = "off";
-      riskInput.placeholder = "1.00";
-      riskInput.value = account.riskRaw;
-      riskInput.addEventListener("input", (event) => {
-        const normalized = normalizeRiskInput(event.target.value);
-        account.riskRaw = normalized;
-        event.target.value = normalized;
-        saveState();
-        renderAll();
-      });
-      riskInput.addEventListener("blur", (event) => {
-        const num = parseRisk(account.riskRaw);
-        account.riskRaw = account.riskRaw === "" ? "" : num.toFixed(2);
-        event.target.value = account.riskRaw;
-        saveState();
-        renderAll();
-      });
-
-      const balance = parseBalance(account.balanceRaw);
-      const riskPercent = parseRisk(account.riskRaw);
-      const lossAllowance = calculateLossAllowance(balance, riskPercent);
-
-      grid.appendChild(createField("口座残高", balanceInput));
-      grid.appendChild(createField("リスク%", riskInput));
-      grid.appendChild(
-        createField(
-          "損失許容額",
-          createReadonlyBox(lossAllowance > 0 ? lossAllowance.toLocaleString("en-US", {
-            maximumFractionDigits: 0
-          }) : "0")
-        )
-      );
-
-      card.appendChild(grid);
-
-      const slDiff = getSlDiff();
-      const slPips = getSlPips();
-      const tpPips = getTpPips();
-      const lot = calculateLot(lossAllowance, slDiff, account.unitSize);
-
-      const results = document.createElement("div");
-      results.className = "result-grid";
-
-      const resultItems = [
-        { label: "ロット数", value: lot.toFixed(2) },
-        { label: "SL pips", value: slPips.toFixed(1) },
-        { label: "TP pips", value: tpPips.toFixed(1) }
-      ];
-
-      resultItems.forEach((item) => {
-        const box = document.createElement("div");
-        box.className = "result-item";
-
-        const label = document.createElement("span");
-        label.className = "result-label";
-        label.textContent = item.label;
-
-        const strong = document.createElement("strong");
-        strong.textContent = item.value;
-
-        box.appendChild(label);
-        box.appendChild(strong);
-        results.appendChild(box);
-      });
-
-      card.appendChild(results);
+      const card = createCard(account);
       cardsRoot.appendChild(card);
     });
+
+  updateAllCardResults();
 }
 
 function renderHiddenCards() {
@@ -444,10 +495,6 @@ function renderAll() {
   renderCards();
   renderHiddenCards();
   updateAddButtonState();
-}
-
-function getCustomAccountsCount() {
-  return state.accounts.filter((account) => account.custom).length;
 }
 
 function getDefaultCustomName(number) {
@@ -502,22 +549,26 @@ function bindCommonInputs() {
   entryInput.addEventListener("input", (event) => {
     const digits = sanitizeRateDigits(event.target.value);
     event.target.value = formatRateFromDigits(digits);
-    renderAll();
+    renderGlobalStats();
+    updateAllCardResults();
   });
 
   slInput.addEventListener("input", (event) => {
     const digits = sanitizeRateDigits(event.target.value);
     event.target.value = formatRateFromDigits(digits);
-    renderAll();
+    renderGlobalStats();
+    updateAllCardResults();
   });
 
   rrInput.value = state.rr;
+
   rrInput.addEventListener("input", (event) => {
     const normalized = normalizeRrInput(event.target.value);
     state.rr = normalized;
     event.target.value = normalized;
     saveState();
-    renderAll();
+    renderGlobalStats();
+    updateAllCardResults();
   });
 
   rrInput.addEventListener("blur", (event) => {
@@ -528,12 +579,9 @@ function bindCommonInputs() {
     }
     event.target.value = state.rr;
     saveState();
-    renderAll();
+    renderGlobalStats();
+    updateAllCardResults();
   });
-
-  if (state.rr !== "") {
-    rrInput.value = state.rr;
-  }
 }
 
 function init() {
@@ -545,6 +593,7 @@ function init() {
     state.rr = "2.50";
   }
 
+  el("rr").value = state.rr;
   renderAll();
 }
 
