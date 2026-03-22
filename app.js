@@ -208,7 +208,7 @@ function getValidationState() {
     return { valid: false, message: "Entry and SL cannot match" };
   }
 
-  return { valid: true, message: "計算OK" };
+  return { valid: true, message: "" };
 }
 
 function calculateLossAllowance(balance, riskPercent) {
@@ -595,7 +595,8 @@ function updateAddButtonState() {
 
   const count = state.accounts.length;
   btn.disabled = count >= MAX_CARDS;
-  btn.textContent = count >= MAX_CARDS ? "Limit Reached" : "Add";
+  btn.textContent = count >= MAX_CARDS ? "Limit Reached" : "+";
+  btn.setAttribute("aria-label", count >= MAX_CARDS ? "Limit reached" : "Add account");
 }
 
 function addCustomCard() {
