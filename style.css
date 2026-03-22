@@ -81,6 +81,10 @@ h1 {
   gap: 8px;
 }
 
+.panel-title-row {
+  flex-wrap: nowrap;
+}
+
 .panel-title-row h2,
 .accounts-header h2,
 .card-title-display {
