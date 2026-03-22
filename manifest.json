@@ -1,6 +1,6 @@
 {
-  "name": "USDJPY ロット計算",
-  "short_name": "LotCalc",
+  "name": "Trade Pilot",
+  "short_name": "Trade Pilot",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#f3f4f6",
