@@ -211,7 +211,7 @@ input[type="text"] {
   border-radius: 14px;
   border: 1px solid #334155;
   background: #0f172a;
-  color: var(--text);
+  color: #9ca3af;
   outline: none;
   transition:
     transform 0.12s cubic-bezier(0.22, 1, 0.36, 1),
@@ -225,6 +225,7 @@ input[type="text"]::placeholder {
 }
 
 input[type="text"]:focus {
+  color: #6b7280;
   border-color: rgba(147, 197, 253, 0.6);
   box-shadow:
     0 0 0 2px rgba(147, 197, 253, 0.18),
@@ -235,6 +236,10 @@ input[type="text"]:focus {
 
 input[type="text"]:active {
   transform: scale(1.01);
+}
+
+input[type="text"]:not(:placeholder-shown) {
+  color: #e5e7eb;
 }
 
 .readonly-box {
