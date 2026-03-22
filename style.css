@@ -102,7 +102,7 @@ h1 {
   position: relative;
 }
 
-common-panel::before {
+.common-panel::before {
   content: "";
   display: block;
   width: 96px;                 /* ← 少し短くして洗練 */
