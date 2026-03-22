@@ -177,7 +177,7 @@ input[type="text"]:active {
 }
 
 .field-rr {
-  max-width: calc(50% - 6px);
+  max-width: 280px;
   width: 100%;
 }
 
