@@ -166,7 +166,10 @@ function getSlValue() {
 function getSlDiff() {
   const entry = getEntryValue();
   const sl = getSlValue();
+
   if (!entry || !sl) return 0;
+  if (entry === sl) return 0;
+
   return Math.abs(entry - sl);
 }
 
@@ -176,6 +179,27 @@ function getSlPips() {
 
 function getTpPips() {
   return getSlPips() * parseRr(state.rr);
+}
+
+function getValidationState() {
+  const entryDigits = sanitizeRateDigits(el("entry")?.value || "");
+  const slDigits = sanitizeRateDigits(el("sl")?.value || "");
+  const entry = getEntryValue();
+  const sl = getSlValue();
+
+  if (!entryDigits || !slDigits) {
+    return { valid: false, message: "Entry / SL を入力してください" };
+  }
+
+  if (!entry || !sl) {
+    return { valid: false, message: "Entry / SL を正しく入力してください" };
+  }
+
+  if (entry === sl) {
+    return { valid: false, message: "Entry と SL は同値にできません" };
+  }
+
+  return { valid: true, message: "計算OK" };
 }
 
 function calculateLossAllowance(balance, riskPercent) {
@@ -391,8 +415,8 @@ function createCard(account) {
   const results = document.createElement("div");
   results.className = "result-grid";
 
-  const resultItems = [
-    { label: "ロット数", role: "lot", value: "0.00" },
+    const resultItems = [
+    { label: "ロット数", role: "lot", value: "-" },
     { label: "SL pips", role: "slPips", value: "0.0" },
     { label: "TP pips", role: "tpPips", value: "0.0" }
   ];
@@ -432,6 +456,7 @@ function updateCardResults(accountId) {
   const slPips = getSlPips();
   const tpPips = getTpPips();
   const lot = calculateLot(lossAllowance, slDiff, account.unitSize);
+  const validation = getValidationState();
 
   const lossEl = card.querySelector('[data-role="loss"]');
   const lotEl = card.querySelector('[data-role="lot"]');
@@ -442,10 +467,26 @@ function updateCardResults(accountId) {
     lossEl.textContent = lossAllowance > 0
       ? lossAllowance.toLocaleString("en-US", { maximumFractionDigits: 0 })
       : "0";
+    lossEl.classList.toggle("is-muted", !validation.valid && lossAllowance === 0);
   }
-  if (lotEl) lotEl.textContent = lot.toFixed(2);
-  if (slPipsEl) slPipsEl.textContent = slPips.toFixed(1);
-  if (tpPipsEl) tpPipsEl.textContent = tpPips.toFixed(1);
+
+  if (lotEl) {
+    lotEl.textContent = validation.valid ? lot.toFixed(2) : "-";
+    lotEl.closest(".result-item")?.classList.toggle("is-muted", !validation.valid);
+    lotEl.closest(".result-item")?.classList.toggle("is-active", validation.valid);
+  }
+
+  if (slPipsEl) {
+    slPipsEl.textContent = validation.valid ? slPips.toFixed(1) : "0.0";
+    slPipsEl.closest(".result-item")?.classList.toggle("is-muted", !validation.valid);
+    slPipsEl.closest(".result-item")?.classList.toggle("is-active", validation.valid);
+  }
+
+  if (tpPipsEl) {
+    tpPipsEl.textContent = validation.valid ? tpPips.toFixed(1) : "0.0";
+    tpPipsEl.closest(".result-item")?.classList.toggle("is-muted", !validation.valid);
+    tpPipsEl.closest(".result-item")?.classList.toggle("is-active", validation.valid);
+  }
 }
 
 function updateAllCardResults() {
@@ -506,8 +547,24 @@ function renderHiddenCards() {
 }
 
 function renderGlobalStats() {
-  el("global-sl-pips").textContent = getSlPips().toFixed(1);
-  el("global-tp-pips").textContent = getTpPips().toFixed(1);
+  const validation = getValidationState();
+  const slEl = el("global-sl-pips");
+  const tpEl = el("global-tp-pips");
+  const subtitleEl = document.querySelector(".subtitle");
+
+  slEl.textContent = validation.valid ? getSlPips().toFixed(1) : "0.0";
+  tpEl.textContent = validation.valid ? getTpPips().toFixed(1) : "0.0";
+
+  slEl.closest(".stat")?.classList.toggle("is-muted", !validation.valid);
+  slEl.closest(".stat")?.classList.toggle("is-active", validation.valid);
+  tpEl.closest(".stat")?.classList.toggle("is-muted", !validation.valid);
+  tpEl.closest(".stat")?.classList.toggle("is-active", validation.valid);
+
+  if (subtitleEl) {
+    subtitleEl.textContent = validation.message;
+    subtitleEl.classList.toggle("is-error-text", !validation.valid);
+    subtitleEl.classList.toggle("is-success-text", validation.valid);
+  }
 }
 
 function renderAll() {

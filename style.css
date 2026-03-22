@@ -378,3 +378,24 @@ input[type="text"]:focus {
     flex: 1;
   }
 }
+
+.result-item.is-muted,
+.stat.is-muted,
+.readonly-box.is-muted,
+.subtitle.is-error-text {
+  opacity: 0.65;
+}
+
+.result-item.is-active,
+.stat.is-active {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+}
+
+.subtitle.is-error-text {
+  color: #b91c1c;
+}
+
+.subtitle.is-success-text {
+  color: #047857;
+}
