@@ -546,6 +546,8 @@ function renderGlobalStats() {
   const tpEl = el("global-tp-pips");
   const subtitleEl = document.querySelector(".subtitle");
 
+  if (!slEl || !tpEl) return;
+
   slEl.textContent = validation.valid ? getSlPips().toFixed(1) : "0.0";
   tpEl.textContent = validation.valid ? getTpPips().toFixed(1) : "0.0";
 
