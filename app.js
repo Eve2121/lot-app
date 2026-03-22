@@ -1,3 +1,6 @@
+let saveStatusTimer = null;
+let vibrateTimer = null;
+
 const MAX_CARDS = 10;
 
 const FIXED_ACCOUNTS = [
@@ -652,6 +655,44 @@ function init() {
 
   el("rr").value = state.rr;
   renderAll();
+}
+
+function updateSaveStatus(mode = "saved") {
+  const statusEl = el("save-status");
+  if (!statusEl) return;
+
+  if (saveStatusTimer) {
+    clearTimeout(saveStatusTimer);
+    saveStatusTimer = null;
+  }
+
+  statusEl.classList.remove("is-saving", "is-saved", "is-hidden");
+
+  if (mode === "saving") {
+    statusEl.textContent = "保存中...";
+    statusEl.classList.add("is-saving");
+    return;
+  }
+
+  statusEl.textContent = "保存済み";
+  statusEl.classList.add("is-saved");
+
+  saveStatusTimer = setTimeout(() => {
+    statusEl.classList.add("is-hidden");
+  }, 1400);
+}
+
+function triggerInputVibration() {
+  if (!("vibrate" in navigator)) return;
+
+  if (vibrateTimer) {
+    clearTimeout(vibrateTimer);
+    vibrateTimer = null;
+  }
+
+  vibrateTimer = setTimeout(() => {
+    navigator.vibrate(8);
+  }, 10);
 }
 
 init();
