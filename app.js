@@ -722,3 +722,8 @@ function init() {
 }
 
 init();
+
+window.addEventListener("appinstalled", () => {
+  console.log("PWA installed");
+  alert("PWA installed");
+});
