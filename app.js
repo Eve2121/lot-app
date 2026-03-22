@@ -74,6 +74,7 @@ function loadState() {
 
 function saveState() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  updateSaveStatus("saved");
 }
 
 function sanitizeDigits(value) {
@@ -126,6 +127,11 @@ function normalizeRrInput(value) {
   const cleaned = sanitizeDecimal(value);
   if (!cleaned) return "";
 
+  if (cleaned.endsWith(".")) {
+    const integerPartOnly = cleaned.slice(0, -1) || "0";
+    return `${integerPartOnly}.`;
+  }
+
   const parts = cleaned.split(".");
   const integerPart = parts[0] || "0";
   const decimalPart = (parts[1] || "").slice(0, 2);
@@ -159,11 +165,11 @@ function parseRateDigitsToNumber(digits) {
 }
 
 function getEntryValue() {
-  return parseRateDigitsToNumber(sanitizeRateDigits(el("entry").value));
+  return parseRateDigitsToNumber(sanitizeRateDigits(el("entry")?.value || ""));
 }
 
 function getSlValue() {
-  return parseRateDigitsToNumber(sanitizeRateDigits(el("sl").value));
+  return parseRateDigitsToNumber(sanitizeRateDigits(el("sl")?.value || ""));
 }
 
 function getSlDiff() {
@@ -250,6 +256,8 @@ function createBalanceInput(account) {
     const digits = sanitizeDigits(event.target.value);
     account.balanceRaw = digits;
     event.target.value = digits;
+    updateSaveStatus("saving");
+    triggerInputVibration();
     saveState();
     updateCardResults(account.id);
   });
@@ -279,6 +287,8 @@ function createRiskInput(account) {
     const normalized = normalizeRiskInput(event.target.value);
     account.riskRaw = normalized;
     event.target.value = normalized;
+    updateSaveStatus("saving");
+    triggerInputVibration();
     saveState();
     updateCardResults(account.id);
   });
@@ -415,7 +425,7 @@ function createCard(account) {
 
   card.appendChild(grid);
 
-    const results = document.createElement("div");
+  const results = document.createElement("div");
   results.className = "result-grid";
 
   const lotBox = document.createElement("div");
@@ -453,8 +463,9 @@ function updateCardResults(accountId) {
 
   const lossEl = card.querySelector('[data-role="loss"]');
   const lotEl = card.querySelector('[data-role="lot"]');
-  const oldSlPipsItem = card.querySelector('[data-role="slPips"]')?.closest('.result-item');
-  const oldTpPipsItem = card.querySelector('[data-role="tpPips"]')?.closest('.result-item');
+
+  const oldSlPipsItem = card.querySelector('[data-role="slPips"]')?.closest(".result-item");
+  const oldTpPipsItem = card.querySelector('[data-role="tpPips"]')?.closest(".result-item");
   if (oldSlPipsItem) oldSlPipsItem.remove();
   if (oldTpPipsItem) oldTpPipsItem.remove();
 
@@ -543,10 +554,10 @@ function renderGlobalStats() {
   tpEl.closest(".stat")?.classList.toggle("is-muted", !validation.valid);
   tpEl.closest(".stat")?.classList.toggle("is-active", validation.valid);
 
-    if (subtitleEl) {
+  if (subtitleEl) {
     subtitleEl.textContent = validation.valid ? "" : validation.message;
-    subtitleEl.classList.toggle('is-error-text', !validation.valid);
-    subtitleEl.classList.toggle('is-success-text', false);
+    subtitleEl.classList.toggle("is-error-text", !validation.valid);
+    subtitleEl.classList.toggle("is-success-text", false);
   }
 }
 
@@ -578,6 +589,8 @@ function getNextCustomNumber() {
 
 function updateAddButtonState() {
   const btn = el("add-card-btn");
+  if (!btn) return;
+
   const count = state.accounts.length;
   btn.disabled = count >= MAX_CARDS;
   btn.textContent = count >= MAX_CARDS ? "追加上限です" : "＋ カード追加";
@@ -598,62 +611,6 @@ function addCustomCard() {
   });
 
   saveState();
-  renderAll();
-}
-
-function bindCommonInputs() {
-  const entryInput = el("entry");
-  const slInput = el("sl");
-  const rrInput = el("rr");
-
-  entryInput.addEventListener("input", (event) => {
-    const digits = sanitizeRateDigits(event.target.value);
-    event.target.value = formatRateFromDigits(digits);
-    renderGlobalStats();
-    updateAllCardResults();
-  });
-
-  slInput.addEventListener("input", (event) => {
-    const digits = sanitizeRateDigits(event.target.value);
-    event.target.value = formatRateFromDigits(digits);
-    renderGlobalStats();
-    updateAllCardResults();
-  });
-
-  rrInput.value = state.rr;
-
-  rrInput.addEventListener("input", (event) => {
-    const normalized = normalizeRrInput(event.target.value);
-    state.rr = normalized;
-    event.target.value = normalized;
-    saveState();
-    renderGlobalStats();
-    updateAllCardResults();
-  });
-
-  rrInput.addEventListener("blur", (event) => {
-    if (state.rr === "") {
-      state.rr = "2.50";
-    } else {
-      state.rr = parseRr(state.rr).toFixed(2);
-    }
-    event.target.value = state.rr;
-    saveState();
-    renderGlobalStats();
-    updateAllCardResults();
-  });
-}
-
-function init() {
-  bindCommonInputs();
-
-  el("add-card-btn").addEventListener("click", addCustomCard);
-
-  if (state.rr === "" || Number.isNaN(parseRr(state.rr))) {
-    state.rr = "2.50";
-  }
-
-  el("rr").value = state.rr;
   renderAll();
 }
 
@@ -693,6 +650,72 @@ function triggerInputVibration() {
   vibrateTimer = setTimeout(() => {
     navigator.vibrate(8);
   }, 10);
+}
+
+function bindCommonInputs() {
+  const entryInput = el("entry");
+  const slInput = el("sl");
+  const rrInput = el("rr");
+
+  if (!entryInput || !slInput || !rrInput) return;
+
+  entryInput.addEventListener("input", (event) => {
+    const digits = sanitizeRateDigits(event.target.value);
+    event.target.value = formatRateFromDigits(digits);
+    triggerInputVibration();
+    renderGlobalStats();
+    updateAllCardResults();
+  });
+
+  slInput.addEventListener("input", (event) => {
+    const digits = sanitizeRateDigits(event.target.value);
+    event.target.value = formatRateFromDigits(digits);
+    triggerInputVibration();
+    renderGlobalStats();
+    updateAllCardResults();
+  });
+
+  rrInput.value = state.rr;
+
+  rrInput.addEventListener("input", (event) => {
+    const normalized = normalizeRrInput(event.target.value);
+    state.rr = normalized;
+    event.target.value = normalized;
+    updateSaveStatus("saving");
+    triggerInputVibration();
+    saveState();
+    renderGlobalStats();
+    updateAllCardResults();
+  });
+
+  rrInput.addEventListener("blur", (event) => {
+    if (state.rr === "") {
+      state.rr = "2.50";
+    } else {
+      state.rr = parseRr(state.rr).toFixed(2);
+    }
+    event.target.value = state.rr;
+    saveState();
+    renderGlobalStats();
+    updateAllCardResults();
+  });
+}
+
+function init() {
+  bindCommonInputs();
+
+  el("add-card-btn")?.addEventListener("click", addCustomCard);
+
+  if (state.rr === "" || Number.isNaN(parseRr(state.rr))) {
+    state.rr = "2.50";
+  }
+
+  if (el("rr")) {
+    el("rr").value = state.rr;
+  }
+
+  renderAll();
+  updateSaveStatus("saved");
 }
 
 init();
