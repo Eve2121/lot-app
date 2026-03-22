@@ -337,7 +337,7 @@ input[type="text"]:active {
 }
 
 .action-btn {
-  background: #f3f4f6;
+  background: rgba(243, 244, 246, 0.82);
   color: var(--text);
 }
 
@@ -386,15 +386,17 @@ input[type="text"]:active {
 
 .card-meta {
   margin-top: 4px;
-  font-size: 12px;
+  font-size: 11px;
   color: var(--subtext);
   font-weight: 700;
+  opacity: 0.88;
 }
 
 .card-actions {
   display: flex;
   gap: 8px;
   flex-shrink: 0;
+  opacity: 0.92;
 }
 
 .result-grid {
@@ -414,28 +416,36 @@ input[type="text"]:active {
 
 .result-item .result-label {
   display: block;
-  font-size: 12px;
+  font-size: 11px;
   color: var(--subtext);
   margin-bottom: 6px;
   font-weight: 700;
+  letter-spacing: 0.02em;
 }
 
 .result-item strong {
-  font-size: 26px;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
+  font-size: 28px;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
 }
 
 .hidden-panel {
   margin-top: 10px;
   margin-bottom: 14px;
   padding: 16px 18px;
+  opacity: 0.85;
 }
 
 .hidden-panel-note {
   margin: 8px 0 0;
   font-size: 12px;
   color: var(--subtext);
+}
+
+.hidden-title {
+  font-size: 13px;
+  color: var(--subtext);
+  font-weight: 700;
 }
 
 .hidden-cards-list {
@@ -648,7 +658,7 @@ input[type="text"]:active {
   }
 
   .action-btn {
-    background: #1e293b;
+    background: rgba(30, 41, 59, 0.82);
     color: var(--text);
   }
 
