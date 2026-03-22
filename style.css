@@ -109,12 +109,9 @@ h1 {
   height: 3px;
   border-radius: 999px;
   background: linear-gradient(90deg, #2563eb, #60a5fa);
-
   margin-left: 2px;
   margin-bottom: 14px;
 }
-
-
 
 .panel-title-row {
   flex-wrap: nowrap;
@@ -437,7 +434,6 @@ input[type="text"]:active {
   box-shadow: none;
   border-color: rgba(148, 163, 184, 0.18);
 }
-
 
 .hidden-title {
   font-size: 12px;
