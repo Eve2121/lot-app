@@ -6,7 +6,7 @@
   <title>Trade Pilot</title>
   <meta name="theme-color" content="#111827" />
   <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" href="style.css?v=20260322-25" />
+  <link rel="stylesheet" href="style.css?v=20260322-27" />
 </head>
 <body>
   <div class="app">
@@ -69,13 +69,6 @@
     </section>
   </div>
 
-  <script src="app.js?v=20260322-25"></script>
-  <script>
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.getRegistrations().then((registrations) => {
-        registrations.forEach((registration) => registration.unregister());
-      });
-    }
-  </script>
+  <script src="app.js?v=20260322-27"></script>
 </body>
 </html>
