@@ -137,11 +137,14 @@ input[type="text"] {
   background: #fff;
   color: var(--text);
   outline: none;
+  transition: transform 0.08s ease, box-shadow 0.12s ease, background-color 0.2s ease;
 }
 
 input[type="text"]:focus {
   border-color: var(--accent-2);
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  transform: scale(1.02);
+  background-color: #f8fafc;
 }
 
 .readonly-box {
