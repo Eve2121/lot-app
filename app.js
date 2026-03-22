@@ -197,15 +197,15 @@ function getValidationState() {
   const sl = getSlValue();
 
   if (!entryDigits || !slDigits) {
-    return { valid: false, message: "Entry / SL を入力してください" };
+    return { valid: false, message: "Enter Entry and SL" };
   }
 
   if (!entry || !sl) {
-    return { valid: false, message: "Entry / SL を正しく入力してください" };
+    return { valid: false, message: "Check Entry and SL" };
   }
 
   if (entry === sl) {
-    return { valid: false, message: "Entry と SL は同値にできません" };
+    return { valid: false, message: "Entry and SL cannot match" };
   }
 
   return { valid: true, message: "計算OK" };
@@ -327,12 +327,12 @@ function createCard(account) {
     const saveBtn = document.createElement("button");
     saveBtn.type = "button";
     saveBtn.className = "title-save-btn";
-    saveBtn.textContent = "保存";
+    saveBtn.textContent = "Save";
 
     const cancelBtn = document.createElement("button");
     cancelBtn.type = "button";
     cancelBtn.className = "title-cancel-btn";
-    cancelBtn.textContent = "取消";
+    cancelBtn.textContent = "Cancel";
 
     saveBtn.addEventListener("click", () => {
       const next = titleInput.value.trim();
@@ -369,7 +369,7 @@ function createCard(account) {
 
     const meta = document.createElement("div");
     meta.className = "card-meta";
-    meta.textContent = `1ロット = ${account.unitSize.toLocaleString("en-US")}通貨`;
+    meta.textContent = `1 Lot = ${account.unitSize.toLocaleString("en-US")} Units`;
 
     const titleBox = document.createElement("div");
     titleBox.appendChild(title);
@@ -384,7 +384,7 @@ function createCard(account) {
   const hideBtn = document.createElement("button");
   hideBtn.type = "button";
   hideBtn.className = "action-btn";
-  hideBtn.textContent = "非表示";
+  hideBtn.textContent = "Hide";
   hideBtn.addEventListener("click", () => {
     account.visible = false;
     account.isEditingTitle = false;
@@ -397,7 +397,7 @@ function createCard(account) {
     const deleteBtn = document.createElement("button");
     deleteBtn.type = "button";
     deleteBtn.className = "action-btn danger";
-    deleteBtn.textContent = "削除";
+    deleteBtn.textContent = "Delete";
     deleteBtn.addEventListener("click", () => {
       state.accounts = state.accounts.filter((a) => a.id !== account.id);
       saveState();
@@ -419,9 +419,9 @@ function createCard(account) {
   const lossBox = createReadonlyBox("0");
   lossBox.dataset.role = "loss";
 
-  grid.appendChild(createField("口座残高", balanceInput));
-  grid.appendChild(createField("リスク%", riskInput));
-  grid.appendChild(createField("損失許容額", lossBox));
+  grid.appendChild(createField("Balance", balanceInput));
+  grid.appendChild(createField("Risk", riskInput));
+  grid.appendChild(createField("Loss", lossBox));
 
   card.appendChild(grid);
 
@@ -433,7 +433,7 @@ function createCard(account) {
 
   const lotLabel = document.createElement("span");
   lotLabel.className = "result-label";
-  lotLabel.textContent = "ロット数";
+  lotLabel.textContent = "Lot Size";
 
   const lotValue = document.createElement("strong");
   lotValue.textContent = "-";
@@ -527,7 +527,7 @@ function renderHiddenCards() {
     const restoreBtn = document.createElement("button");
     restoreBtn.type = "button";
     restoreBtn.className = "restore-btn";
-    restoreBtn.textContent = "再表示";
+    restoreBtn.textContent = "Restore";
     restoreBtn.addEventListener("click", () => {
       account.visible = true;
       saveState();
@@ -571,7 +571,7 @@ function renderAll() {
 }
 
 function getDefaultCustomName(number) {
-  return `追加口座${number}`;
+  return `Account ${number}`;
 }
 
 function getDefaultCustomNameFromId(id) {
@@ -595,7 +595,7 @@ function updateAddButtonState() {
 
   const count = state.accounts.length;
   btn.disabled = count >= MAX_CARDS;
-  btn.textContent = count >= MAX_CARDS ? "追加上限です" : "＋ カード追加";
+  btn.textContent = count >= MAX_CARDS ? "Limit Reached" : "Add";
 }
 
 function addCustomCard() {
@@ -628,12 +628,12 @@ function updateSaveStatus(mode = "saved") {
   statusEl.classList.remove("is-saving", "is-saved", "is-hidden");
 
   if (mode === "saving") {
-    statusEl.textContent = "保存中...";
+    statusEl.textContent = "Saving...";
     statusEl.classList.add("is-saving");
     return;
   }
 
-  statusEl.textContent = "保存済み";
+  statusEl.textContent = "Saved";
   statusEl.classList.add("is-saved");
 
   saveStatusTimer = setTimeout(() => {
