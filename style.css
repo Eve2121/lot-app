@@ -225,7 +225,7 @@ input[type="text"]::placeholder {
 }
 
 input[type="text"]:focus {
-  color: #374151;
+  color: #374151 !important;
   border-color: rgba(147, 197, 253, 0.6);
   box-shadow:
     0 0 0 2px rgba(147, 197, 253, 0.18),
