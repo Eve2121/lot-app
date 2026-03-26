@@ -477,10 +477,17 @@ function updateCardResults(accountId) {
   }
 
   if (lotEl) {
-    lotEl.textContent = validation.valid ? lot.toFixed(2) : "-";
-    lotEl.closest(".result-item")?.classList.toggle("is-muted", !validation.valid);
-    lotEl.closest(".result-item")?.classList.toggle("is-active", validation.valid);
-  }
+  const shouldRoundLot = account.id === "lion";
+  const lotText = !validation.valid
+    ? "-"
+    : shouldRoundLot
+      ? String(Math.round(lot))
+      : lot.toFixed(2);
+
+  lotEl.textContent = lotText;
+  lotEl.closest(".result-item")?.classList.toggle("is-muted", !validation.valid);
+  lotEl.closest(".result-item")?.classList.toggle("is-active", validation.valid);
+}
 }
 
 function updateAllCardResults() {
