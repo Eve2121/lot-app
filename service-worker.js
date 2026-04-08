@@ -1,10 +1,12 @@
-const CACHE_NAME = "risk-pilot-v2";
+const CACHE_NAME = "risk-pilot-v3";
 const URLS_TO_CACHE = [
   "/lot-app/",
   "/lot-app/index.html",
   "/lot-app/manifest.json",
   "/lot-app/icon-192.png",
-  "/lot-app/icon-512.png"
+  "/lot-app/icon-512.png",
+  "/lot-app/app.js",   
+  "/lot-app/style.css" 
 ];
 
 self.addEventListener("install", (event) => {
