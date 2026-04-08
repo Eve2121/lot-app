@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <link rel="manifest" href="manifest.json" />
-  <link rel="apple-touch-icon" href="icon-192.png" />
+  <link rel="apple-touch-icon" href="/lot-app/icon-192.png" />
   <link rel="stylesheet" href="style.css?v=20260322-44" />
 </head>
 <body>
@@ -74,13 +74,15 @@
 
   <script src="app.js?v=20260322-44"></script>
   <script>
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./service-worker.js").catch((error) => {
-          console.error("Service Worker registration failed:", error);
-        });
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./service-worker.js", {
+        scope: "/lot-app/"
+      }).catch((error) => {
+        console.error("Service Worker registration failed:", error);
       });
-    }
-  </script>
+    });
+  }
+</script>
 </body>
 </html>
